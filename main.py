@@ -62,39 +62,39 @@ class ToDoApp:
 
         # Search for To-Do
 
-        self.got_time_label = ttk.Label(text="Got time?")
-        self.got_time_label.grid(column=3, row=0, columnspan=2, padx=10, pady=5)
-
-        self.got_time_label = ttk.Label(text="How long do you have?")
-        self.got_time_label.grid(column=3, row=1, columnspan=2, padx=10)
-
-        self.search_hours_label = ttk.Label(text="Hours:")
-        self.search_hours_label.grid(column=3, row=2, padx=10, pady=10)
-        self.search_hour_scroll = ttk.Spinbox(from_=0, to=4)
-        self.search_hour_scroll.config(width=5)
-        self.search_hour_scroll.insert(0, "0")
-        self.search_hour_scroll.grid(column=3, row=3, padx=10, pady=5)
-
-        self.search_minutes_label = ttk.Label(text="Minutes:")
-        self.search_minutes_label.grid(column=4, row=2, padx=10, pady=5)
-        self.search_min_scroll = ttk.Spinbox(from_=0, to=59)
-        self.search_min_scroll.config(width=5)
-        self.search_min_scroll.insert(0, "00")
-        self.search_min_scroll.grid(column=4, row=3, padx=10, pady=5)
-
-        self.search_result = ttk.Label(text=f"What to do?")
-        self.search_result.grid(column=3, row=4, columnspan=2, padx=10, pady=5)
-
-        self.search_description_label = ttk.Label(text="Description:")
-        self.search_description_label.grid(column=3, row=5, columnspan=2, padx=10, pady=5)
-
-        self.search_description_text = ttk.Canvas()
-        self.search_description_text.config(width=50, height=25)
-        self.canvas_text = self.search_description_text.create_text(25,
-                                                 15,
-                                                 fill='white',
-                                                 text="")
-        self.search_description_text.grid(column=3, row=6, columnspan=2, padx=10, pady=5)
+        # self.got_time_label = ttk.Label(text="Got time?")
+        # self.got_time_label.grid(column=3, row=0, columnspan=2, padx=10, pady=5)
+        #
+        # self.got_time_label = ttk.Label(text="How long do you have?")
+        # self.got_time_label.grid(column=3, row=1, columnspan=2, padx=10)
+        #
+        # self.search_hours_label = ttk.Label(text="Hours:")
+        # self.search_hours_label.grid(column=3, row=2, padx=10, pady=10)
+        # self.search_hour_scroll = ttk.Spinbox(from_=0, to=4)
+        # self.search_hour_scroll.config(width=5)
+        # self.search_hour_scroll.insert(0, "0")
+        # self.search_hour_scroll.grid(column=3, row=3, padx=10, pady=5)
+        #
+        # self.search_minutes_label = ttk.Label(text="Minutes:")
+        # self.search_minutes_label.grid(column=4, row=2, padx=10, pady=5)
+        # self.search_min_scroll = ttk.Spinbox(from_=0, to=59)
+        # self.search_min_scroll.config(width=5)
+        # self.search_min_scroll.insert(0, "00")
+        # self.search_min_scroll.grid(column=4, row=3, padx=10, pady=5)
+        #
+        # self.search_result = ttk.Label(text=f"What to do?")
+        # self.search_result.grid(column=3, row=4, columnspan=2, padx=10, pady=5)
+        #
+        # self.search_description_label = ttk.Label(text="Description:")
+        # self.search_description_label.grid(column=3, row=5, columnspan=2, padx=10, pady=5)
+        #
+        # self.search_description_text = ttk.Canvas()
+        # self.search_description_text.config(width=50, height=25)
+        # self.canvas_text = self.search_description_text.create_text(25,
+        #                                          15,
+        #                                          fill='white',
+        #                                          text="")
+        # self.search_description_text.grid(column=3, row=6, columnspan=2, padx=10, pady=5)
 
         self.search_b2 = ttk.Button(text="Search", bootstyle="warning-outline", command=self.search_to_do)
         self.search_b2.grid(column=3, row=7, padx=10, pady=5)
@@ -132,8 +132,8 @@ class ToDoApp:
             self.description_text.delete("1.0", END)
 
     def search_to_do(self):
-        search_hour = int(self.search_hour_scroll.get())
-        search_min = int(self.search_min_scroll.get())
+        search_hour = int(self.hour_scroll.get())
+        search_min = int(self.min_scroll.get())
         search_time = search_hour + (search_min / 100)
         try:
             with open("todo.json", "r") as data_file:
@@ -143,16 +143,11 @@ class ToDoApp:
         else:
             for item in data:
                 if float(search_time) >= float(item):
-                    self.search_description_text.delete("all")
-                    self.search_description_text.create_text(25,
-                                                             15,
-                                                             fill='white',
-                                                             text=data[item]['message'])
                     print(f"{data[item]}, {search_time}")
-                    self.search_result.config(text=f"{data[item]['what']}")
+
         finally:
-            self.search_hour_scroll.set(0)
-            self.search_min_scroll.set(00)
+            self.hour_scroll.set(0)
+            self.min_scroll.set(00)
 
 
     def delete(self, *args):

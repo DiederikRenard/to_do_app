@@ -6,5 +6,9 @@
     "1.0": {
         "what": "Dishes",
         "message": "Do dishes\n"
+    },
+    "1.0": {
+        "what": "Painting",
+        "message": "paint the fence\n"
     }
 }
