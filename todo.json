@@ -1,9 +1,10 @@
 {
-    "Dogs": {
-        "time": [
-            1,
-            22
-        ],
-        "message": "Walk the dogs aswell!\n"
+    "1.22": {
+        "what": "Walk dogs",
+        "message": "sdaqweqwe\n"
+    },
+    "1.0": {
+        "what": "Dishes",
+        "message": "Do dishes\n"
     }
 }
