@@ -70,7 +70,7 @@ class ToDoApp:
         self.search_b2 = ttk.Button(text="Got time?", bootstyle="warning-outline", command=self.got_time)
         self.search_b2.grid(column=0, row=8, padx=10, pady=5)
 
-        self.search_b4 = ttk.Button(text="Search", bootstyle="warning",)
+        self.search_b4 = ttk.Button(text="Search", bootstyle="warning", command=self.search_task)
         self.search_b4.grid(column=1, row=7, padx=10, pady=5)
 
         self.delete_b3 = ttk.Button(text="Delete", bootstyle="danger-outline", command=self.delete)
@@ -78,18 +78,18 @@ class ToDoApp:
         label_row = 0
 
         for row in cursor.execute("SELECT title, duration FROM to_dos ORDER BY duration"):
-            print(row)
             self.to_do_label_title = ttk.Label(text=f"")
             self.to_do_label_time = ttk.Label(text=f"")
             self.to_do_label_title.grid(column=3, row=label_row, padx=10, pady=5)
             self.to_do_label_time.grid(column=4, row=label_row, padx=10, pady=5)
             label_row += 1
-        self.list_todos()
-
+        try:
+            self.list_todos()
+        except AttributeError:
+            pass
 
     def add_to_do(self):
-        print("ok, its done")
-        todo_name = self.to_do_text.get()
+        todo_name = self.to_do_text.get().title()
         hour = int(self.hour_scroll.get())
         minute = int(self.min_scroll.get())
         time = f"{hour}.{minute}"
@@ -103,6 +103,21 @@ class ToDoApp:
         self.description_text.delete("1.0", END)
         self.list_todos()
 
+    def search_task(self):
+        search_title = self.to_do_text.get().title()
+        sql_query = "SELECT title, duration, description FROM to_dos WHERE title=?"
+        cur = connection.cursor()
+        result = cur.execute(sql_query, (search_title,))
+        search_result = result.fetchone()
+        if search_result:
+            title = search_result[0]
+            duration = search_result[1]
+            description = search_result[2]
+            messagebox.showinfo(title=title, message=f"To do: {title}; {description}.\n "
+                                                     f"It should take around {duration}h.")
+        else:
+            messagebox.showinfo(title="Not found", message=f"Couldn't find your search. Maybe check your spelling.")
+
     def got_time(self):
         search_hour = int(self.hour_scroll.get())
         search_min = int(self.min_scroll.get())
@@ -112,32 +127,39 @@ class ToDoApp:
             duration = float(row[0])
             all_times.append(duration)
             if float(row[0]) <= search_time:
-                messagebox.showinfo(title=row[1], message=f"You can {row[2]}.\n It should take around {row[0]}h.")
+                messagebox.showinfo(title=row[1], message=f"To do: {row[1]}; "
+                                                          f"{row[2]}.\n It should take around {row[0]}h.")
                 break
-        if float(all_times[-1]) > search_time:
+        try:
+            if float(all_times[-1]) > search_time:
+                messagebox.showinfo(title="Found nothing",
+                                    message="You do not have enough time for anything on your list")
+        except IndexError:
             messagebox.showinfo(title="Found nothing",
-                                message="You do not have enough time for anything on your list")
+                                message="You have nothing on your to-do list!! Way to go!!")
 
         self.hour_scroll.set(0)
         self.min_scroll.set(00)
         self.list_todos()
 
     def delete(self):
-        to_delete = str(self.to_do_text.get())
+        to_delete = str(self.to_do_text.get()).title()
         sql = 'DELETE FROM to_dos WHERE title=?'
         cur = connection.cursor()
         cur.execute(sql, (to_delete,))
         connection.commit()
-
+        cur.close()
+        self.to_do_text.delete(0, END)
         self.list_todos()
 
     def list_todos(self):
-        self.to_do_label_title.destroy()
-        self.to_do_label_time.destroy()
+        try:
+            self.to_do_label_title.destroy()
+            self.to_do_label_time.destroy()
+        except AttributeError:
+            pass
         label_row = 0
         for row in cursor.execute("SELECT title, duration FROM to_dos ORDER BY duration"):
-            print(row)
-
             self.to_do_label_title = ttk.Label(text=f"")
             self.to_do_label_title.config(text=f"")
             self.to_do_label_title.config(text=f"{row[0]}")
@@ -153,4 +175,3 @@ class ToDoApp:
 if __name__ == "__main__":
     todo = ToDoApp()
     todo.root.mainloop()
-
