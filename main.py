@@ -58,49 +58,22 @@ class ToDoApp:
         self.description_text.grid(column=0, row=6, columnspan=2, padx=10, pady=5)
 
         self.b1 = ttk.Button(text="Submit", bootstyle="success", command=self.add_to_do)
-        self.b1.grid(column=1, row=7, padx=10, pady=5)
+        self.b1.grid(column=0, row=7, padx=10, pady=5)
 
         # Search for To-Do
 
-        # self.got_time_label = ttk.Label(text="Got time?")
-        # self.got_time_label.grid(column=3, row=0, columnspan=2, padx=10, pady=5)
-        #
-        # self.got_time_label = ttk.Label(text="How long do you have?")
-        # self.got_time_label.grid(column=3, row=1, columnspan=2, padx=10)
-        #
-        # self.search_hours_label = ttk.Label(text="Hours:")
-        # self.search_hours_label.grid(column=3, row=2, padx=10, pady=10)
-        # self.search_hour_scroll = ttk.Spinbox(from_=0, to=4)
-        # self.search_hour_scroll.config(width=5)
-        # self.search_hour_scroll.insert(0, "0")
-        # self.search_hour_scroll.grid(column=3, row=3, padx=10, pady=5)
-        #
-        # self.search_minutes_label = ttk.Label(text="Minutes:")
-        # self.search_minutes_label.grid(column=4, row=2, padx=10, pady=5)
-        # self.search_min_scroll = ttk.Spinbox(from_=0, to=59)
-        # self.search_min_scroll.config(width=5)
-        # self.search_min_scroll.insert(0, "00")
-        # self.search_min_scroll.grid(column=4, row=3, padx=10, pady=5)
-        #
-        # self.search_result = ttk.Label(text=f"What to do?")
-        # self.search_result.grid(column=3, row=4, columnspan=2, padx=10, pady=5)
-        #
-        # self.search_description_label = ttk.Label(text="Description:")
-        # self.search_description_label.grid(column=3, row=5, columnspan=2, padx=10, pady=5)
-        #
-        # self.search_description_text = ttk.Canvas()
-        # self.search_description_text.config(width=50, height=25)
-        # self.canvas_text = self.search_description_text.create_text(25,
-        #                                          15,
-        #                                          fill='white',
-        #                                          text="")
-        # self.search_description_text.grid(column=3, row=6, columnspan=2, padx=10, pady=5)
+        self.search_b2 = ttk.Button(text="Got time?", bootstyle="warning-outline", command=self.got_time)
+        self.search_b2.grid(column=0, row=8, padx=10, pady=5)
 
-        self.search_b2 = ttk.Button(text="Search", bootstyle="warning-outline", command=self.search_to_do)
-        self.search_b2.grid(column=3, row=7, padx=10, pady=5)
+        self.search_b4 = ttk.Button(text="Search", bootstyle="warning",)
+        self.search_b4.grid(column=1, row=7, padx=10, pady=5)
 
         self.delete_b3 = ttk.Button(text="Delete", bootstyle="danger-outline", command=self.delete)
-        self.delete_b3.grid(column=4, row=7, padx=10, pady=5)
+        self.delete_b3.grid(column=1, row=8, padx=10, pady=5)
+        self.row_number = 0
+        self.list_todos()
+
+
 
     def add_to_do(self):
         print("ok, its done")
@@ -130,28 +103,55 @@ class ToDoApp:
             self.hour_scroll.set(0)
             self.min_scroll.set(00)
             self.description_text.delete("1.0", END)
+            self.list_todos()
 
-    def search_to_do(self):
+    def got_time(self):
         search_hour = int(self.hour_scroll.get())
         search_min = int(self.min_scroll.get())
         search_time = search_hour + (search_min / 100)
         try:
             with open("todo.json", "r") as data_file:
                 data = json.load(data_file)
+                for item in data:
+                    if float(search_time) >= float(item):
+                        messagebox.showinfo(title=f"{data[item]['what']}",
+                                            message=f"{data[item]['message']}\n"
+                                                    f"Should take about {search_hour}h{search_min}m")
+                        break
         except FileNotFoundError:
             messagebox.showwarning("File not found. No To-dos have been made yet!")
-        else:
-            for item in data:
-                if float(search_time) >= float(item):
-                    print(f"{data[item]}, {search_time}")
-
         finally:
             self.hour_scroll.set(0)
             self.min_scroll.set(00)
+            self.list_todos()
 
+    def delete(self):
+        to_delete = self.to_do_text.get()
+        try:
+            with open("todo.json", "w") as data_file:
+                data = json.load(data_file)
+                for item in data:
+                    if data[item]['what'] == to_delete:
+                        print(data[item])
+                        # del data.item
+                        print(data)
+                        break
+        except FileNotFoundError:
+            messagebox.showwarning("File not found. No To-dos have been made yet!")
+        self.list_todos()
 
-    def delete(self, *args):
-        print(*args)
+    def list_todos(self):
+        try:
+            with open("todo.json", "r") as data_file:
+                data = json.load(data_file)
+
+                for item in data:
+                    self.to_do_label = ttk.Label(text=f"{data[item]['what']}")
+                    self.to_do_label.grid(column=3, row=self.row_number, columnspan=2, padx=10, pady=5)
+                    self.row_number += 1
+        except FileNotFoundError:
+            pass
+
 
 
 if __name__ == "__main__":
