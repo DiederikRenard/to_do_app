@@ -20,11 +20,13 @@ import json
 
 class ToDoApp:
     def __init__(self):
-
+        # Window
         self.root = ttk.Window(themename="darkly")
         self.root.title("To-Do List")
 
         # New entry for To-Do
+
+        # Text
 
         self.to_do_label = ttk.Label(text="To-do Today:")
         self.to_do_label.grid(column=0, row=0, columnspan=2, padx=10, pady=5)
@@ -35,6 +37,8 @@ class ToDoApp:
 
         self.to_do_label = ttk.Label(text="How long will it take in")
         self.to_do_label.grid(column=0, row=2, columnspan=2, padx=10)
+
+        # Time
 
         self.hours_label = ttk.Label(text="Hours:")
         self.hours_label.grid(column=0, row=3, padx=10, pady=10)
@@ -49,6 +53,8 @@ class ToDoApp:
         self.min_scroll.config(width=5)
         self.min_scroll.insert(0, "00")
         self.min_scroll.grid(column=1, row=4, padx=10, pady=5)
+
+        # Give Description
 
         self.description_label = ttk.Label(text="Description (Optional):")
         self.description_label.grid(column=0, row=5, columnspan=2, padx=10, pady=5)
